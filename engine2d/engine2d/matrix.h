@@ -56,6 +56,25 @@ struct mx_matrix4
 	float det();
 };
 
+struct mx_vector2
+{
+	float data[2];
+	//----------------------------------------------
+	//
+	mx_vector2();
+	mx_vector2(const float *V);
+	mx_vector2(float x, float y);
+	//---------------------------------------------
+	//			TRANSFORMACJE
+	mx_vector2 normalize();
+
+	//---------------------------------------------
+	//OPERATORY
+	mx_vector2 operator += (const mx_vector2 &V);
+	mx_vector2 operator -= (const mx_vector2 &V);
+	const float &operator [] (int i) const;
+};
+
 struct mx_vector3
 {
 	float data[3];

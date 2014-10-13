@@ -1,20 +1,19 @@
-#include <GL/glew.h>
-#include <SDL.h>
-
-#include "matrix.h"
+#include "Headers.h"
+#include "Texture2D.h"
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-GLfloat left = -0.5f;
-GLfloat right = 0.5f;
-GLfloat bottom = -0.5f;
-GLfloat top = 0.5f;
-GLfloat close = 1.0f;
-GLfloat wide = 10.0f;
+GLfloat leftV = -0.5f;
+GLfloat rightV = 0.5f;
+GLfloat bottomV = -0.5f;
+GLfloat topV = 0.5f;
+GLfloat closeV = 1.0f;
+GLfloat wideV = 10.0f;
 
 GLuint vbo[2];
 
+SDL_GLContext maincontext;
 SDL_Window *mainwindow;
 
 mx_matrix4 pMatrix;
@@ -75,15 +74,29 @@ void Reshape()
 	pMatrix.LoadIdentity();
 
 	if (w < h && w > 0)
-		pMatrix.Ortho(left, right, bottom*h / w, top*h / w, close, wide);
+		pMatrix.Ortho(leftV, rightV, bottomV*h / w, topV*h / w, closeV, wideV);
 	else if (w > h && h > 0)
-		pMatrix.Ortho(left*w / h, right*w / h, bottom, top, close, wide);
+		pMatrix.Ortho(leftV*w / h, rightV*w / h, bottomV, topV, closeV, wideV);
 	else
-		pMatrix.Ortho(left, right, bottom, top, close, wide);
+		pMatrix.Ortho(leftV, rightV, bottomV, topV, closeV, wideV);
 }
 
 void InitScene()
 {
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+	mainwindow = SDL_CreateWindow("Engine2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	maincontext = SDL_GL_CreateContext(mainwindow);
+	SDL_GL_SetSwapInterval(1);
+
+	IMG_Init(IMG_INIT_PNG);
+
+	GLenum error = glewInit();
+
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 
 	//TO POWINNO BYC W SPRITE
@@ -102,19 +115,6 @@ void InitScene()
 
 int main(int argc, char *argv[])
 {
-	SDL_GLContext maincontext;
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-	mainwindow = SDL_CreateWindow("Engine2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	maincontext = SDL_GL_CreateContext(mainwindow);
-	SDL_GL_SetSwapInterval(1);
-
-	GLenum error = glewInit();
-
 	InitScene();
 
 	Reshape();

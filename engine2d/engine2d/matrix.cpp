@@ -2,7 +2,57 @@
 
 #include "matrix.h"
 
+//--------------------------------------------------------------------------
+//						VECTOR2
+mx_vector2::mx_vector2()
+{
+	data[0] = 0.0f;
+	data[1] = 0.0f;
+}
+mx_vector2::mx_vector2(const float *V)
+{
+	data[0] = V[0];
+	data[1] = V[1];
+}
 
+mx_vector2::mx_vector2(float x, float y)
+{
+	data[0] = x;
+	data[1] = y;
+}
+
+mx_vector2 mx_vector2::normalize()
+{
+	float distance = sqrt((data[0] * data[0]) + (data[1] * data[1]));
+
+	if (distance)
+	{
+		data[0] /= distance;
+		data[1] /= distance;
+	}
+	return *this;
+}
+
+mx_vector2 mx_vector2::operator += (const mx_vector2 &V)
+{
+	data[0] += V[0];
+	data[1] += V[1];
+
+	return *this;
+}
+
+mx_vector2 mx_vector2::operator -= (const mx_vector2 &V)
+{
+	data[0] -= V[0];
+	data[1] -= V[1];
+
+	return *this;
+}
+
+const float &mx_vector2::operator [] (int i) const
+{
+	return data[i];
+}
 //--------------------------------------------------------------------------
 //						VECTOR3
 mx_vector3::mx_vector3()

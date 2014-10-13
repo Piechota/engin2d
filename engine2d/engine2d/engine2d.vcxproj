@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Konrad\SkyDrive\Dokumenty\repos\engin2d\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Konrad\SkyDrive\Dokumenty\repos\engin2d\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Konrad\Desktop\programowanie silników\silnik2d\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Konrad\Desktop\programowanie silników\silnik2d\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -50,8 +50,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,9 +71,16 @@
   <ItemGroup>
     <ClCompile Include="engine2dmain.cpp" />
     <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="RecourceFactory.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers.h" />
     <ClInclude Include="matrix.h" />
+    <ClInclude Include="ResourceFactory.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Texture2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
