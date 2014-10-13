@@ -11,30 +11,13 @@ GLfloat topV = 0.5f;
 GLfloat closeV = 1.0f;
 GLfloat wideV = 10.0f;
 
-GLuint vbo[2];
-
 SDL_GLContext maincontext;
 SDL_Window *mainwindow;
 
 mx_matrix4 pMatrix;
 
-GLfloat tile[] =
-{
-	-1.0f, 1.0f, 0.0f,
-	1.0f, 1.0f, 0.0f,
-	1.0f, -1.0f, 0.0f,
-	-1.0f, -1.0f, 0.0f
-};
 
-GLfloat tile_coord[] =
-{
-	0.0f, 0.0f,
-	1.0f, 0.0f,
-	1.0f, -1.0f,
-	0.0f, -1.0f
-};
-
-void ShaderVertexCreate(GLuint program, const char** shader)
+void ShaderVertexCreate(GLuint &program, const char** shader)
 {
 	if (glIsProgram(program) == GL_FALSE)
 		program = glCreateProgram();
@@ -45,7 +28,7 @@ void ShaderVertexCreate(GLuint program, const char** shader)
 	glCompileShader(vs_shader);
 	glAttachShader(program, vs_shader);
 }
-void ShaderFragmentCreate(GLuint program, const char** shader)
+void ShaderFragmentCreate(GLuint &program, const char** shader)
 {
 	if (glIsProgram(program) == GL_FALSE)
 		program = glCreateProgram();
@@ -56,7 +39,7 @@ void ShaderFragmentCreate(GLuint program, const char** shader)
 	glCompileShader(fs_shader);
 	glAttachShader(program, fs_shader);
 }
-void ShaderVertexFragmentLink(GLuint program, const char** vertex_shader, const char** fragment_shader)
+void ShaderVertexFragmentLink(GLuint &program, const char** vertex_shader, const char** fragment_shader)
 {
 	ShaderVertexCreate(program, vertex_shader);
 	ShaderFragmentCreate(program, fragment_shader);
@@ -98,18 +81,6 @@ void InitScene()
 	GLenum error = glewInit();
 
 	glClearColor(0.f, 0.f, 0.f, 1.f);
-
-	//TO POWINNO BYC W SPRITE
-
-	glGenBuffers(2, vbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tile), tile, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tile_coord), tile_coord, GL_STATIC_DRAW);
-
-	//TO POWINNO BYC W SPRITE
 
 }
 

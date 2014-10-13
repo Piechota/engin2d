@@ -11,6 +11,10 @@ private:
 	string _fileName;
 	int _width;
 	int _height;
+
+	mx_vector2 _size;
+	mx_vector2 _currentPosition;
+
 	~Terrain();
 
 public:
