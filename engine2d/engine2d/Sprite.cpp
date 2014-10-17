@@ -1,5 +1,122 @@
 #include "Sprite.h"
 
+void ShaderVertexCreate(GLuint &program, const char** shader)
+{
+	GLint Result = GL_FALSE;
+	int logLength;
+	char* info;
+
+	if (glIsProgram(program) == GL_FALSE)
+		program = glCreateProgram();
+
+	GLuint vs_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vs_shader, 1, shader, NULL);
+
+	glCompileShader(vs_shader);
+
+	glGetShaderiv(vs_shader, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(vs_shader, GL_INFO_LOG_LENGTH, &logLength);
+
+	info = new char[logLength];
+	glGetShaderInfoLog(vs_shader, logLength, NULL, info);
+	cout << info;
+	delete[] info;
+
+	glAttachShader(program, vs_shader);
+}
+void ShaderFragmentCreate(GLuint &program, const char** shader)
+{
+	GLint Result = GL_FALSE;
+	int logLength;
+	char* info;
+
+	if (glIsProgram(program) == GL_FALSE)
+		program = glCreateProgram();
+
+	GLuint fs_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fs_shader, 1, shader, NULL);
+
+	glCompileShader(fs_shader);
+
+	glGetShaderiv(fs_shader, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(fs_shader, GL_INFO_LOG_LENGTH, &logLength);
+
+	info = new char[logLength];
+	glGetShaderInfoLog(fs_shader, logLength, NULL, info);
+	cout << info;
+	delete[] info;
+
+	glAttachShader(program, fs_shader);
+}
+void ShaderVertexFragmentLink(GLuint &program, const char** vertex_shader, const char** fragment_shader)
+{
+	ShaderVertexCreate(program, vertex_shader);
+	ShaderFragmentCreate(program, fragment_shader);
+
+	glLinkProgram(program);
+
+	GLint Result = GL_FALSE;
+	int logLength;
+	char* info;
+
+	glGetProgramiv(program, GL_LINK_STATUS, &Result);
+	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+
+	info = new char[logLength];
+	glGetProgramInfoLog(program, logLength, NULL, info);
+	cout << info;
+	delete[] info;
+}
+
+const char* vs[] =
+{
+	"#version 330								\n"
+
+	"layout(location=0) in vec4 inPosition;		\n"
+	"layout(location=1) in vec2 inTexCoord;		\n"
+
+	"uniform mat4 mvpMatrix;					\n"
+
+	"out vec2 TexCoord;							\n"
+
+	"void main()								\n"
+	"{											\n"
+	"	gl_Position = inPosition;	\n"
+	//"	gl_Position = mvpMatrix * inPosition;	\n"
+	"	TexCoord = inTexCoord;					\n"
+	"}											\n"
+};
+const char* fs[] =
+{
+	"#version 330								\n"
+
+	"in vec2 inTexCoord;						\n"
+
+	"uniform sampler2D tex;						\n"
+
+	"out vec4 Color;							\n"
+
+	"void main()								\n"
+	"{											\n"
+	"	Color = vec4(0, 0, 1, 1);		\n"
+	//"	Color = texture(tex, inTexCoord);		\n"
+	"}											\n"
+};
+
+GLuint vbo[2];
+
+GLfloat tile[] =
+{
+	-1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f,
+	1.0f, -1.0f, 0.0f,
+	-1.0f, -1.0f, 0.0f
+};
+
+GLuint Sprite::program;
+
+mx_matrix4 Sprite::pMatrix;
+
 Sprite::Sprite(Texture2D* texture, int frameCount, float framesPerSecond)
 {
 	_texture = texture;
@@ -51,10 +168,12 @@ void Sprite::draw(mx_vector2 position, float deegre)
 {
 	mx_matrix4 mvMatrix;
 	mvMatrix.LoadIdentity();
-	mvMatrix.translate(position[0], position[1], 5.f);
-	mvMatrix.rotate(0.f, 0.f, -1.f, deegre);
+	//mvMatrix.translate(position[0], position[1], -5.f);
+	//mvMatrix.rotate(0.f, 0.f, -1.f, deegre);
 
-	//glUseProgram(program);
+	mvMatrix = pMatrix * mvMatrix;
+
+	glUseProgram(program);
 
 	glActiveTexture(GL_TEXTURE0);
 	_texture->bind();
@@ -75,7 +194,8 @@ void Sprite::draw(mx_vector2 position, float deegre)
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 
-	//glUseProgram(0);
+
+	glUseProgram(0);
 }
 
 void Sprite::play()

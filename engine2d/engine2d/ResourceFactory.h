@@ -14,6 +14,7 @@ private:
 	texturesMap _textures;
 
 public:
+	static const string resource;
 	Texture2D* load(string);
 
 	static ResourceFactory& GetInstance()

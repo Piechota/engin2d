@@ -1,7 +1,13 @@
 #include "Terrain.h"
+#include "ResourceFactory.h"
 
 Terrain::~Terrain()
 {
+	for (int y = 0; y < _height; y++)
+	{
+		for (int x = 0; x < _width; x++)
+			delete _tiles[x][y];
+	}	
 	for (int x = 0; x < _width; x++)
 		delete[] _tiles[x];
 
@@ -10,7 +16,36 @@ Terrain::~Terrain()
 
 Terrain::Terrain(string file)
 {
-	
+	ifstream mapFile;
+	mapFile.open(file);
+
+	if (!mapFile.is_open())
+		return;
+
+	string buffer;
+	char mapTile;
+
+	getline(mapFile, buffer);
+	_width = stoi(buffer);
+
+	getline(mapFile, buffer);
+	_height = stoi(buffer);
+
+	_tiles = new Sprite**[_width];
+	for (int i = 0; i < _width; i++)
+		_tiles[i] = new Sprite*[_height];
+
+	for (int i = 0; i < _width * _height; i++)
+	{
+		int x, y;
+		x = i%_height;
+		y = (i - x) / _height;
+
+		mapFile >> mapTile;
+		_tiles[x][y] = new Sprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + mapTile + ".jpg"));
+	}
+
+	mapFile.close();
 }
 
 void Terrain::SetViewSize(mx_vector2 size)
@@ -52,12 +87,21 @@ void Terrain::update()
 		fromY = _height - 1 - 2 * _size[1];
 	}
 
-	for (int x = fromX; x < toX; x++)
+	//for (int x = fromX; x < toX; x++)
+	//{
+	//	for (int y = fromY; y < toY; y++)
+	//	{
+	//		_tiles[x][y]->update();
+	//		_tiles[x][y]->draw(mx_vector2(x, y), 0.f);
+	//	}
+	//}
+
+	for (int x = 0; x < _width; x++)
 	{
-		for (int y = fromY; y < toY; y++)
+		for (int y = 0; y < _height; y++)
 		{
-			_tiles[x][y].update();
-			_tiles[x][y].draw(mx_vector2(x, y), 0.f);
+			//_tiles[x][y]->update();
+			_tiles[x][y]->draw(mx_vector2(x, y), 0.f);
 		}
 	}
 }

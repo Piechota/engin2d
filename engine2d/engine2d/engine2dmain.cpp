@@ -1,5 +1,6 @@
 #include "Headers.h"
-#include "Texture2D.h"
+#include "Terrain.h"
+#include "ResourceFactory.h"
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -14,38 +15,7 @@ GLfloat wideV = 10.0f;
 SDL_GLContext maincontext;
 SDL_Window *mainwindow;
 
-mx_matrix4 pMatrix;
-
-
-void ShaderVertexCreate(GLuint &program, const char** shader)
-{
-	if (glIsProgram(program) == GL_FALSE)
-		program = glCreateProgram();
-
-	GLuint vs_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs_shader, 1, shader, NULL);
-
-	glCompileShader(vs_shader);
-	glAttachShader(program, vs_shader);
-}
-void ShaderFragmentCreate(GLuint &program, const char** shader)
-{
-	if (glIsProgram(program) == GL_FALSE)
-		program = glCreateProgram();
-
-	GLuint fs_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs_shader, 1, shader, NULL);
-
-	glCompileShader(fs_shader);
-	glAttachShader(program, fs_shader);
-}
-void ShaderVertexFragmentLink(GLuint &program, const char** vertex_shader, const char** fragment_shader)
-{
-	ShaderVertexCreate(program, vertex_shader);
-	ShaderFragmentCreate(program, fragment_shader);
-
-	glLinkProgram(program);
-}
+Terrain* terrain;
 
 void Reshape()
 {
@@ -54,21 +24,21 @@ void Reshape()
 	SDL_GetWindowSize(mainwindow, &w, &h);
 
 	glViewport(0, 0, w, h);
-	pMatrix.LoadIdentity();
+	Sprite::pMatrix.LoadIdentity();
 
 	if (w < h && w > 0)
-		pMatrix.Ortho(leftV, rightV, bottomV*h / w, topV*h / w, closeV, wideV);
+		Sprite::pMatrix.Ortho(leftV, rightV, bottomV*h / w, topV*h / w, closeV, wideV);
 	else if (w > h && h > 0)
-		pMatrix.Ortho(leftV*w / h, rightV*w / h, bottomV, topV, closeV, wideV);
+		Sprite::pMatrix.Ortho(leftV*w / h, rightV*w / h, bottomV, topV, closeV, wideV);
 	else
-		pMatrix.Ortho(leftV, rightV, bottomV, topV, closeV, wideV);
+		Sprite::pMatrix.Ortho(leftV, rightV, bottomV, topV, closeV, wideV);
 }
 
 void InitScene()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
@@ -80,8 +50,20 @@ void InitScene()
 
 	GLenum error = glewInit();
 
-	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClearColor(0.5f, 0.f, 0.f, 1.f);
 
+	terrain = new Terrain(ResourceFactory::resource + "map.txt");
+	terrain->SetViewSize(mx_vector2(2, 2));
+	terrain->SetViewPos(mx_vector2(1, 1));
+}
+
+void TerrainDisplay()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	terrain->update();
+
+	glFlush();
 }
 
 int main(int argc, char *argv[])
@@ -112,11 +94,14 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		TerrainDisplay();
 		SDL_GL_SwapWindow(mainwindow);
 	}
 	SDL_GL_DeleteContext(maincontext);
 	SDL_DestroyWindow(mainwindow);
 	SDL_Quit();
+
+	delete terrain;
 
 	return 0;
 }

@@ -1,5 +1,7 @@
 #include "ResourceFactory.h"
 
+const string ResourceFactory::resource = "../Resource/";
+
 Texture2D* ResourceFactory::load(string file)
 {
 	if (!_textures.empty())
