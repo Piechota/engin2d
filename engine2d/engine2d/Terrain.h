@@ -7,7 +7,7 @@
 class Terrain
 {
 private:
-	Sprite ***_tiles;
+	MySprite ***_tiles;
 	string _fileName;
 	int _width;
 	int _height;

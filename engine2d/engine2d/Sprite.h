@@ -5,7 +5,7 @@
 #include "Texture2D.h"
 #include "Timer.h"
 
-class Sprite
+class MySprite
 {
 private:
 	int _frameCount;
@@ -28,7 +28,7 @@ private:
 public:
 	static mx_matrix4 pMatrix;
 
-	Sprite(Texture2D*, int = 1, float = 0.0f);
+	MySprite(Texture2D*, int = 1, float = 0.0f);
 	void update();
 	void draw(mx_vector2, float);
 	void play();

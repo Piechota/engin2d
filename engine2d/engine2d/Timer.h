@@ -6,8 +6,8 @@
 class Timer
 {
 private:
-	static float deltaTime;
-	static float lastCall;
+	static Time deltaTime;
+	static Clock clock;
 
 public:
 	static void update();

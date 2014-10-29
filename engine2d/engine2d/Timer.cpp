@@ -1,15 +1,11 @@
 #include "Timer.h"
 
-float Timer::deltaTime;
-float Timer::lastCall;
+Time Timer::deltaTime;
+Clock Timer::clock;
 
 void Timer::update()
 {
-	if (lastCall = 0.f)
-	{
-		lastCall = SDL_GetTicks();
-	}
-	deltaTime = SDL_GetTicks() - lastCall;
-	lastCall = SDL_GetTicks();
+	deltaTime = clock.getElapsedTime();
+	clock.restart();
 }
-float Timer::getDeltaTime() { return deltaTime; }
+float Timer::getDeltaTime() { return deltaTime.asSeconds(); }

@@ -13,8 +13,10 @@ GLuint Texture2D::GetTextureID()
 
 Texture2D::Texture2D(string file)
 {
-	SDL_Surface* texture = IMG_Load(file.c_str());
-	if (!texture)
+	Image texture;
+	
+
+	if (!texture.loadFromFile(file))
 	{
 		cout << "Brak tektury" << endl;
 		return;
@@ -22,9 +24,7 @@ Texture2D::Texture2D(string file)
 
 	glGenTextures(1, &_textureID);
 	glBindTexture(GL_TEXTURE_2D, _textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->w, texture->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
-
-	SDL_FreeSurface(texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
 }
 
 void Texture2D::bind()

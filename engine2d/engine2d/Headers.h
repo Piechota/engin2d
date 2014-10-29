@@ -2,8 +2,8 @@
 #define _HEADERS_
 
 #include <GL/glew.h>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 #include <string>
 #include <map>
@@ -13,5 +13,6 @@
 #include "matrix.h"
 
 using namespace std;
+using namespace sf;
 
 #endif 

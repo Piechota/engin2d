@@ -113,11 +113,11 @@ GLfloat tile[] =
 	-1.0f, -1.0f, 0.0f
 };
 
-GLuint Sprite::program;
+GLuint MySprite::program;
 
-mx_matrix4 Sprite::pMatrix;
+mx_matrix4 MySprite::pMatrix;
 
-Sprite::Sprite(Texture2D* texture, int frameCount, float framesPerSecond)
+MySprite::MySprite(Texture2D* texture, int frameCount, float framesPerSecond)
 {
 	_texture = texture;
 	_frameCount = frameCount;
@@ -144,7 +144,7 @@ Sprite::Sprite(Texture2D* texture, int frameCount, float framesPerSecond)
 	}
 }
 
-void Sprite::update()
+void MySprite::update()
 {
 	if (_state == ANIMATELESS)
 		return;
@@ -164,7 +164,7 @@ void Sprite::update()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tile_coord), tile_coord, GL_DYNAMIC_DRAW);
 }
 
-void Sprite::draw(mx_vector2 position, float deegre)
+void MySprite::draw(mx_vector2 position, float deegre)
 {
 	mx_matrix4 mvMatrix;
 	mvMatrix.LoadIdentity();
@@ -198,18 +198,18 @@ void Sprite::draw(mx_vector2 position, float deegre)
 	glUseProgram(0);
 }
 
-void Sprite::play()
+void MySprite::play()
 {
 	_state = ANIMATE;
 	_currentFrame = 0.f;
 }
 
-void Sprite::resume()
+void MySprite::resume()
 {
 	_state = ANIMATE;
 }
 
-void Sprite::pause()
+void MySprite::pause()
 {
 	_state = ANIMATELESS;
 }

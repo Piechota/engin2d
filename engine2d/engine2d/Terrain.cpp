@@ -31,9 +31,9 @@ Terrain::Terrain(string file)
 	getline(mapFile, buffer);
 	_height = stoi(buffer);
 
-	_tiles = new Sprite**[_width];
+	_tiles = new MySprite**[_width];
 	for (int i = 0; i < _width; i++)
-		_tiles[i] = new Sprite*[_height];
+		_tiles[i] = new MySprite*[_height];
 
 	for (int i = 0; i < _width * _height; i++)
 	{
@@ -42,7 +42,7 @@ Terrain::Terrain(string file)
 		y = (i - x) / _height;
 
 		mapFile >> mapTile;
-		_tiles[x][y] = new Sprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + mapTile + ".jpg"));
+		_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + mapTile + ".jpg"));
 	}
 
 	mapFile.close();
