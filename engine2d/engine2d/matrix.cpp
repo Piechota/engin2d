@@ -53,6 +53,10 @@ const float &mx_vector2::operator [] (int i) const
 {
 	return data[i];
 }
+float &mx_vector2::operator[] (int i)
+{
+	return data[i];
+}
 //--------------------------------------------------------------------------
 //						VECTOR3
 mx_vector3::mx_vector3()
@@ -636,6 +640,18 @@ mx_matrix4 mx_matrix4::operator *= (const float x)
 	 return tmp;
  }
 
+ mx_vector2 operator + (const mx_vector2 V1, const mx_vector2 V2)
+ {
+	 mx_vector2 tmp(V1[0] + V2[0], V1[1] + V2[1]);
+	 return tmp;
+ }
+
+ mx_vector2 operator - (const mx_vector2 V1, const mx_vector2 V2)
+ {
+	 mx_vector2 tmp(V1[0] - V2[0], V1[1] - V2[1]);
+	 return tmp;
+ }
+
  bool operator == (mx_vector3 V1, mx_vector3 V2)
  {
 	 return (V1[0] == V2[0] && V1[1] == V2[1] && V1[2] == V2[2]);
@@ -646,6 +662,10 @@ mx_matrix4 mx_matrix4::operator *= (const float x)
  float dot3(const mx_vector3 V1, const mx_vector3 V2)
  {
 	 return V1[0]*V2[0] + V1[1]*V2[1] + V1[2]*V2[2];
+ }
+ float dot2(const mx_vector2 V1, const mx_vector2 V2)
+ {
+	 return V1[0] * V2[0] + V1[1] * V2[1];
  }
 
  float length(const mx_vector3 V)

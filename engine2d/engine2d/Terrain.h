@@ -14,12 +14,17 @@ private:
 
 	mx_vector2 _size;
 	mx_vector2 _currentPosition;
+	mx_vector2 _startGrid;
 
 
 public:
 	Terrain(string file);
-	void SetViewSize(mx_vector2);
+	void SetViewSize(mx_vector2, mx_vector2);
 	void SetViewPos(mx_vector2);
+	void MoveByVector(mx_vector2);
+
+	mx_vector2 GetStartPoint();
+	mx_vector2 GetCenter();
 
 	void update();
 	~Terrain();

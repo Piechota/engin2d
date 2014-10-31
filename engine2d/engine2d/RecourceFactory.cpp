@@ -12,6 +12,7 @@ Texture2D* ResourceFactory::load(string file)
 	}
 
 	_textures[file] = new Texture2D(file);
+	return _textures[file];
 }
 
 ResourceFactory::~ResourceFactory()

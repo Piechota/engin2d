@@ -81,8 +81,7 @@ const char* vs[] =
 
 	"void main()								\n"
 	"{											\n"
-	"	gl_Position = inPosition;	\n"
-	//"	gl_Position = mvpMatrix * inPosition;	\n"
+	"	gl_Position = mvpMatrix * inPosition;	\n"
 	"	TexCoord = inTexCoord;					\n"
 	"}											\n"
 };
@@ -90,7 +89,7 @@ const char* fs[] =
 {
 	"#version 330								\n"
 
-	"in vec2 inTexCoord;						\n"
+	"in vec2 TexCoord;						\n"
 
 	"uniform sampler2D tex;						\n"
 
@@ -98,8 +97,7 @@ const char* fs[] =
 
 	"void main()								\n"
 	"{											\n"
-	"	Color = vec4(0, 0, 1, 1);		\n"
-	//"	Color = texture(tex, inTexCoord);		\n"
+	"	Color = texture(tex, TexCoord);			\n"
 	"}											\n"
 };
 
@@ -107,10 +105,10 @@ GLuint vbo[2];
 
 GLfloat tile[] =
 {
-	-1.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f,
 	1.0f, 1.0f, 0.0f,
-	1.0f, -1.0f, 0.0f,
-	-1.0f, -1.0f, 0.0f
+	0.0f, 1.0f, 0.0f
 };
 
 GLuint MySprite::program;
@@ -127,6 +125,8 @@ MySprite::MySprite(Texture2D* texture, int frameCount, float framesPerSecond)
 	tile_coord[2] = 1.0f / _frameCount; tile_coord[3] = 0.0f;
 	tile_coord[4] = 1.0f / _frameCount; tile_coord[5] = -1.0f;
 	tile_coord[6] = 0.0f;				tile_coord[7] = -1.0f;
+
+	_state = ANIMATELESS;
 
 	if (!glIsProgram(program))
 	{
@@ -147,14 +147,25 @@ MySprite::MySprite(Texture2D* texture, int frameCount, float framesPerSecond)
 void MySprite::update()
 {
 	if (_state == ANIMATELESS)
-		return;
+	{
+		int changeToFrame = (int)_currentFrame;
+		tile_coord[0] = (float)changeToFrame / _frameCount;
+		tile_coord[2] = (float)(changeToFrame + 1) / _frameCount;
+		tile_coord[4] = (float)(changeToFrame + 1) / _frameCount;
+		tile_coord[6] = (float)changeToFrame / _frameCount;
 
+		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(tile_coord), tile_coord, GL_DYNAMIC_DRAW);
+		return;
+	}
 	_currentFrame += Timer::getDeltaTime() * _framesPerSecond;
 
 	int changeToFrame = (int)_currentFrame;
 	if (changeToFrame >= _frameCount)
+	{
 		changeToFrame = 0;
-
+		_currentFrame = 0;
+	}
 	tile_coord[0] = (float)changeToFrame / _frameCount;
 	tile_coord[2] = (float)(changeToFrame + 1) / _frameCount;
 	tile_coord[4] = (float)(changeToFrame + 1) / _frameCount;
@@ -168,8 +179,8 @@ void MySprite::draw(mx_vector2 position, float deegre)
 {
 	mx_matrix4 mvMatrix;
 	mvMatrix.LoadIdentity();
-	//mvMatrix.translate(position[0], position[1], -5.f);
-	//mvMatrix.rotate(0.f, 0.f, -1.f, deegre);
+	mvMatrix.translate(position[0], position[1], -5.f);
+	mvMatrix.rotate(0.f, 0.f, -1.f, deegre);
 
 	mvMatrix = pMatrix * mvMatrix;
 
@@ -177,6 +188,44 @@ void MySprite::draw(mx_vector2 position, float deegre)
 
 	glActiveTexture(GL_TEXTURE0);
 	_texture->bind();
+
+	glUniform1i(glGetUniformLocation(program, "tex"), 0);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "mvpMatrix"), 1, GL_TRUE, mvMatrix.data);
+
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+
+	glUseProgram(0);
+}
+void MySprite::draw(mx_vector2 position, mx_vector2 lookAt)
+{
+	mx_matrix4 mvMatrix;
+	mvMatrix.LoadIdentity();
+	mvMatrix.translate(position[0], position[1], -5.f);
+
+	mx_matrix4 rMatrix;
+	mx_vector3 rightVector;
+	rightVector = (mx_vector3(lookAt[0], lookAt[1], 0) * mx_vector3(0, 0, 1));
+	rMatrix.LoadIdentity();
+	mvMatrix = pMatrix * mvMatrix;
+
+	glUseProgram(program);
+
+	glActiveTexture(GL_TEXTURE0);
+	_texture->bind();
+
 	glUniform1i(glGetUniformLocation(program, "tex"), 0);
 
 	glEnableVertexAttribArray(0);

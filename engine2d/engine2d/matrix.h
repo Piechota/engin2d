@@ -73,6 +73,7 @@ struct mx_vector2
 	mx_vector2 operator += (const mx_vector2 &V);
 	mx_vector2 operator -= (const mx_vector2 &V);
 	const float &operator [] (int i) const;
+	float &operator [] (int i);
 };
 
 struct mx_vector3
@@ -120,9 +121,13 @@ mx_vector3 operator * (const mx_vector3 V1, const mx_vector3 V2);
 mx_vector3 operator / (const mx_vector3 V, const float a);
 mx_vector3 operator - (const mx_vector3 V1, const mx_vector3 V2);
 
+mx_vector2 operator + (const mx_vector2 V1, const mx_vector2 V2);
+mx_vector2 operator - (const mx_vector2 V1, const mx_vector2 V2);
+
 bool operator == (mx_vector3 V1, mx_vector3 V2); 
 
 float dot3(const mx_vector3 V1, const mx_vector3 V2);
+float dot2(const mx_vector2 V1, const mx_vector2 V2);
 
 float length(const mx_vector3 V);
 

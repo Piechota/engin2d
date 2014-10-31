@@ -1,6 +1,12 @@
 #include "Terrain.h"
 #include "ResourceFactory.h"
 
+
+GLfloat rightG = 2.0f;
+GLfloat topG = 2.0f;
+GLfloat closeG = 1.0f;
+GLfloat wideG = 10.0f;
+
 Terrain::~Terrain()
 {
 	for (int y = 0; y < _height; y++)
@@ -33,24 +39,48 @@ Terrain::Terrain(string file)
 
 	_tiles = new MySprite**[_width];
 	for (int i = 0; i < _width; i++)
+	{
 		_tiles[i] = new MySprite*[_height];
-
+	}
 	for (int i = 0; i < _width * _height; i++)
 	{
 		int x, y;
-		x = i%_height;
-		y = (i - x) / _height;
+		x = i%_width;
+		y = (_height - 1) - ((i - x) / _width);
 
 		mapFile >> mapTile;
-		_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + mapTile + ".jpg"));
+
+		if (mapTile == 's')
+		{
+			SetViewPos(mx_vector2(x, y));
+			_startGrid = mx_vector2(x, y);
+			_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + 'g' + ".png"));
+			continue;
+		}
+
+		_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + mapTile + ".png"));
 	}
 
 	mapFile.close();
 }
 
-void Terrain::SetViewSize(mx_vector2 size)
+void Terrain::SetViewSize(mx_vector2 winSize, mx_vector2 size)
 {
-	_size = size;
+	int w = winSize[0], h = winSize[1];
+
+	rightG = size[0];
+	topG = size[1];
+
+	glViewport(0, 0, w, h);
+	MySprite::pMatrix.LoadIdentity();
+
+	if (w < h && w > 0)
+		topG = topG*h / w;
+	else if (w > h && h > 0)
+		rightG = rightG*w / h;
+
+
+		MySprite::pMatrix.Ortho(0.0f, rightG, 0.0f, topG, closeG, wideG);
 }
 
 void Terrain::SetViewPos(mx_vector2 position)
@@ -60,48 +90,27 @@ void Terrain::SetViewPos(mx_vector2 position)
 
 void Terrain::update()
 {
-	int fromX = (int)(_currentPosition[0] - _size[0]);
-	int toX = (int)(_currentPosition[0] + _size[0]);
-
-	int fromY = (int)(_currentPosition[1] - _size[1]);
-	int toY = (int)(_currentPosition[1] + _size[1]);
-
-	if (fromX < 0)
-	{
-		fromX = 0;
-		toX = 2 * _size[0];
-	}
-	if (toX > _width)
-	{
-		toX = _width - 1;
-		fromX = _width - 1 - 2 * _size[0];
-	}
-	if (fromY < 0)
-	{
-		fromY = 0;
-		toY = 2 * _size[1];
-	}
-	if (toY > _height)
-	{
-		toY = _height - 1;
-		fromY = _height - 1 - 2 * _size[1];
-	}
-
-	//for (int x = fromX; x < toX; x++)
-	//{
-	//	for (int y = fromY; y < toY; y++)
-	//	{
-	//		_tiles[x][y]->update();
-	//		_tiles[x][y]->draw(mx_vector2(x, y), 0.f);
-	//	}
-	//}
-
 	for (int x = 0; x < _width; x++)
 	{
 		for (int y = 0; y < _height; y++)
 		{
-			//_tiles[x][y]->update();
-			_tiles[x][y]->draw(mx_vector2(x, y), 0.f);
+			_tiles[x][y]->update();
+			_tiles[x][y]->draw(mx_vector2(x, y) - _currentPosition - mx_vector2(0.5f, 0.5f) + mx_vector2(rightG / 2.f, topG / 2.f), 0);
 		}
 	}
+}
+
+void Terrain::MoveByVector(mx_vector2 delta)
+{
+	_currentPosition += delta;
+}
+
+mx_vector2 Terrain::GetStartPoint()
+{
+	return _startGrid;
+}
+
+mx_vector2 Terrain::GetCenter()
+{
+	return   mx_vector2(rightG / 2.f, topG / 2.f) - mx_vector2(0.5f, 0.5f);
 }

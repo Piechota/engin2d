@@ -5,150 +5,18 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-GLfloat leftV = -0.5f;
-GLfloat rightV = 0.5f;
-GLfloat bottomV = -0.5f;
-GLfloat topV = 0.5f;
-GLfloat closeV = 1.0f;
-GLfloat wideV = 10.0f;
-
 Window window;
 
 Terrain* terrain;
+float moveSpeed = 1.0f;
 
-void ShaderVertexCreatetest(GLuint &program, const char** shader)
-{
-	GLint Result = GL_FALSE;
-	int logLength;
-	char* info;
-
-	if (glIsProgram(program) == GL_FALSE)
-		program = glCreateProgram();
-
-	GLuint vs_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs_shader, 1, shader, NULL);
-
-	glCompileShader(vs_shader);
-
-	glGetShaderiv(vs_shader, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(vs_shader, GL_INFO_LOG_LENGTH, &logLength);
-
-	info = new char[logLength];
-	glGetShaderInfoLog(vs_shader, logLength, NULL, info);
-	cout << info;
-	delete[] info;
-
-	glAttachShader(program, vs_shader);
-}
-void ShaderFragmentCreatetest(GLuint &program, const char** shader)
-{
-	GLint Result = GL_FALSE;
-	int logLength;
-	char* info;
-
-	if (glIsProgram(program) == GL_FALSE)
-		program = glCreateProgram();
-
-	GLuint fs_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs_shader, 1, shader, NULL);
-
-	glCompileShader(fs_shader);
-
-	glGetShaderiv(fs_shader, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(fs_shader, GL_INFO_LOG_LENGTH, &logLength);
-
-	info = new char[logLength];
-	glGetShaderInfoLog(fs_shader, logLength, NULL, info);
-	cout << info;
-	delete[] info;
-
-	glAttachShader(program, fs_shader);
-}
-void ShaderVertexFragmentLinktest(GLuint &program, const char** vertex_shader, const char** fragment_shader)
-{
-	ShaderVertexCreatetest(program, vertex_shader);
-	ShaderFragmentCreatetest(program, fragment_shader);
-
-	glLinkProgram(program);
-
-	GLint Result = GL_FALSE;
-	int logLength;
-	char* info;
-
-	glGetProgramiv(program, GL_LINK_STATUS, &Result);
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-
-	info = new char[logLength];
-	glGetProgramInfoLog(program, logLength, NULL, info);
-	cout << info;
-	delete[] info;
-}
-
-const char* vstest[] =
-{
-	"#version 330								\n"
-
-	"layout(location=0) in vec4 inPosition;		\n"
-	//"layout(location=1) in vec2 inTexCoord;		\n"
-
-	//"uniform mat4 mvpMatrix;					\n"
-
-	"out vec2 TexCoord;							\n"
-
-	"void main()								\n"
-	"{											\n"
-	"	gl_Position = inPosition;	\n"
-	//"	gl_Position = mvpMatrix * inPosition;	\n"
-	//"	TexCoord = inTexCoord;					\n"
-	"}											\n"
-};
-const char* fstest[] =
-{
-	"#version 330								\n"
-
-	//"in vec2 inTexCoord;						\n"
-
-	//"uniform sampler2D tex;						\n"
-
-	"out vec4 Color;							\n"
-
-	"void main()								\n"
-	"{											\n"
-	"	Color = vec4(0, 0, 1, 1);		\n"
-	//"	Color = texture(tex, inTexCoord);		\n"
-	"}											\n"
-};
-
-GLuint vbotest[2];
-
-GLfloat tiletest[] =
-{
-	-1.0f, 1.0f, 0.0f,
-	1.0f, 1.0f, 0.0f,
-	1.0f, -1.0f, 0.0f,
-	-1.0f, -1.0f, 0.0f
-};
-
-GLuint programtest;
-
-void Reshape()
-{
-	int w = window.getSize().x, h = window.getSize().y;
-
-	glViewport(0, 0, w, h);
-	MySprite::pMatrix.LoadIdentity();
-
-	if (w < h && w > 0)
-		MySprite::pMatrix.Ortho(leftV, rightV, bottomV*h / w, topV*h / w, closeV, wideV);
-	else if (w > h && h > 0)
-		MySprite::pMatrix.Ortho(leftV*w / h, rightV*w / h, bottomV, topV, closeV, wideV);
-	else
-		MySprite::pMatrix.Ortho(leftV, rightV, bottomV, topV, closeV, wideV);
-}
+MySprite* hero;
+mx_vector2 heroPosition;
+float angle;
 
 void InitScene()
 {
-	window.create(VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Engine2D", Style::Default);
+	window.create(VideoMode(), "Engine2D", Style::Fullscreen);
 
 	GLenum error = glewInit();
 	if (error != GLEW_OK)
@@ -156,44 +24,26 @@ void InitScene()
 		cout << "glew faild" << endl;
 	}
 
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-	glClearColor(0.5f, 0.f, 0.f, 1.f);
-
+	glClearColor(0.0f, 0.f, 0.f, 1.f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	terrain = new Terrain(ResourceFactory::resource + "map.txt");
-	terrain->SetViewSize(mx_vector2(2, 2));
-	terrain->SetViewPos(mx_vector2(1, 1));
+	terrain->SetViewSize(mx_vector2(window.getSize().x, window.getSize().y), mx_vector2(8, 8));
 
-	glGenBuffers(1, &vbotest[0]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbotest[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tiletest), tiletest, GL_STATIC_DRAW);
-
-	ShaderVertexFragmentLinktest(programtest, vstest, fstest);
-
-	glUseProgram(programtest);
+	hero = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + "hero.png"), 3, 10.0f);
+	hero->play();
+	heroPosition = terrain->GetStartPoint();
 }
 
 void TerrainDisplay()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(programtest);
+	terrain->update();
 
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vbotest[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	hero->update(); 
+	hero->draw(terrain->GetCenter(), angle);
 
-	glDrawArrays(GL_QUADS, 0, 4);
-
-	glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-
-
-	glUseProgram(0);
-
-	//terrain->update();
 
 	glFlush();
 }
@@ -202,12 +52,64 @@ int main(int argc, char *argv[])
 {
 	InitScene();
 
-	Reshape();
-
 	bool run = true;
 	while (run)
 	{
-		//TODO: INPUT
+		Timer::update();
+		Event event;		//SFML
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+			case Event::Closed:
+				run = false;
+				break;
+			case Event::KeyPressed:
+				if (event.key.code == Keyboard::Escape)
+					run = false;
+				break;
+			}
+		}
+		
+		hero->pause();
+		mx_vector2 direction;
+		if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W))
+		{
+			direction += mx_vector2(0, moveSpeed * Timer::getDeltaTime()); 
+			hero->resume();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+		{
+			direction += mx_vector2(0, -moveSpeed * Timer::getDeltaTime());
+			hero->resume();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+		{
+			direction += mx_vector2(-moveSpeed * Timer::getDeltaTime(), 0);
+			hero->resume();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+		{
+			direction += mx_vector2(moveSpeed * Timer::getDeltaTime(), 0);
+			hero->resume();
+		}
+
+		Vector2i mp = Mouse::getPosition();
+		mx_vector2 mouseVector;
+		mouseVector[0] = mp.x;
+		mouseVector[1] = mp.y;
+
+		mx_vector2 center;
+		center[0] = window.getSize().x / 2;
+		center[1] = window.getSize().y / 2;
+
+		mouseVector -= center;
+		mouseVector.normalize();
+
+		angle = acos(dot2(mouseVector, mx_vector2(0, 1))) * 57.2957795f;
+		cout << angle << endl;
+
+		terrain->MoveByVector(direction);
 
 		TerrainDisplay();
 		window.display();
@@ -215,6 +117,7 @@ int main(int argc, char *argv[])
 	window.close();
 
 	delete terrain;
+	delete hero;
 
 	return 0;
 }
