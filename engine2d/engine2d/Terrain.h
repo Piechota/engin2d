@@ -24,7 +24,6 @@ public:
 	void MoveByVector(mx_vector2);
 
 	mx_vector2 GetStartPoint();
-	mx_vector2 GetCenter();
 
 	void update();
 	~Terrain();

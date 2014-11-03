@@ -23,10 +23,13 @@ Terrain::~Terrain()
 Terrain::Terrain(string file)
 {
 	ifstream mapFile;
-	mapFile.open(file);
+	mapFile.open(ResourceFactory::resource + file);
 
 	if (!mapFile.is_open())
+	{
+		cout << "nie mozna otworzyc mapy" << endl;
 		return;
+	}
 
 	string buffer;
 	char mapTile;
@@ -54,11 +57,8 @@ Terrain::Terrain(string file)
 		{
 			SetViewPos(mx_vector2(x, y));
 			_startGrid = mx_vector2(x, y);
-			_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + 'g' + ".png"));
-			continue;
 		}
-
-		_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(ResourceFactory::resource + mapTile + ".png"));
+		_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(string() + mapTile + ".png"));
 	}
 
 	mapFile.close();
@@ -95,7 +95,7 @@ void Terrain::update()
 		for (int y = 0; y < _height; y++)
 		{
 			_tiles[x][y]->update();
-			_tiles[x][y]->draw(mx_vector2(x, y) - _currentPosition - mx_vector2(0.5f, 0.5f) + mx_vector2(rightG / 2.f, topG / 2.f), 0);
+			_tiles[x][y]->draw(mx_vector2(x, y) - _currentPosition + mx_vector2(rightG / 2.f, topG / 2.f), 0);
 		}
 	}
 }
@@ -108,9 +108,4 @@ void Terrain::MoveByVector(mx_vector2 delta)
 mx_vector2 Terrain::GetStartPoint()
 {
 	return _startGrid;
-}
-
-mx_vector2 Terrain::GetCenter()
-{
-	return   mx_vector2(rightG / 2.f, topG / 2.f) - mx_vector2(0.5f, 0.5f);
 }

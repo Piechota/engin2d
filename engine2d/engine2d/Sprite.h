@@ -23,16 +23,15 @@ private:
 
 	static GLuint program;
 
-	GLuint coordVBO;
+	GLuint VBO[2];
+	
 	GLfloat tile_coord[8];
-
 public:
 	static mx_matrix4 pMatrix;
 
 	MySprite(Texture2D*, int = 1, float = 0.0f);
 	void update();
 	void draw(mx_vector2, float);
-	void draw(mx_vector2, mx_vector2);
 	void play();
 	void resume();
 	void pause();

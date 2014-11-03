@@ -31,5 +31,6 @@ Texture2D::Texture2D(string file)
 
 void Texture2D::bind()
 {
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 }

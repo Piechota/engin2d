@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "matrix.h"
+#include "ShadersLoader.h"
 
 using namespace std;
 using namespace sf;
