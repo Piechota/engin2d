@@ -15,8 +15,15 @@ Texture2D* ResourceFactory::load(string file)
 	return _textures[file];
 }
 
+void ResourceFactory::AddPawn(Pawn* pawn)
+{
+	pawns.push_back(pawn);
+}
+
 ResourceFactory::~ResourceFactory()
 {
 	for (texturesMap::iterator i = _textures.begin(); i != _textures.end(); i++)
 		delete i->second;
+
+	for_each(pawns.begin(), pawns.end(), [](Pawn* pawn){delete pawn; });
 }

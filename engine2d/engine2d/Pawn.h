@@ -6,15 +6,15 @@
 
 class Pawn
 {
-private:
+protected:
 	MySprite* sprite;
-
-public:
 	mx_vector2 position;
 	float angle;
 
+public:
 	Pawn(MySprite* sprite, mx_vector2 position, float angle = 0.f);
-	virtual void Update();
+	~Pawn();
+	virtual void Update(mx_vector2 worldOffset);
 };
 
 #endif

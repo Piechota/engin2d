@@ -8,7 +8,6 @@ const int SCREEN_HEIGHT = 480;
 Window window;
 
 Terrain* terrain;
-float moveSpeed = 1.0f;
 
 void InitScene()
 {
@@ -23,8 +22,7 @@ void InitScene()
 	glClearColor(0.0f, 0.f, 0.f, 1.f);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	terrain = new Terrain("map.txt");
-	terrain->SetViewSize(	mx_vector2(window.getSize().x, window.getSize().y), 
+	terrain = new Terrain("map.txt", mx_vector2(window.getSize().x, window.getSize().y), 
 							mx_vector2(6, 6));
 }
 
@@ -59,26 +57,6 @@ int main(int argc, char *argv[])
 				break;
 			}
 		}
-		
-		mx_vector2 direction;
-		if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W))
-		{
-			direction += mx_vector2(0, moveSpeed * Timer::getDeltaTime()); 
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
-		{
-			direction += mx_vector2(0, -moveSpeed * Timer::getDeltaTime());
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
-		{
-			direction += mx_vector2(-moveSpeed * Timer::getDeltaTime(), 0);
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
-		{
-			direction += mx_vector2(moveSpeed * Timer::getDeltaTime(), 0);
-		}
-
-		terrain->MoveByVector(direction);
 
 		TerrainDisplay();
 		window.display();

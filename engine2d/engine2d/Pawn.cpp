@@ -1,13 +1,19 @@
 #include "Pawn.h"
+#include "ResourceFactory.h"
 
-Pawn::Pawn(MySprite* sprite, mx_vector2 position, float angle = 0.f)
+Pawn::~Pawn()
+{
+	delete sprite;
+}
+Pawn::Pawn(MySprite* sprite, mx_vector2 position, float angle)
 {
 	this->sprite = sprite;
 	this->position = position;
 	this->angle = angle;
+	ResourceFactory::GetInstance().AddPawn(this);
 }
 
-void Pawn::Update()
+void Pawn::Update(mx_vector2 worldOffset)
 {
 	
 }

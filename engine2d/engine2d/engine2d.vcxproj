@@ -47,13 +47,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Konrad\Desktop\programowanie silników\include;C:\Users\Konrad\SkyDrive\Dokumenty\repos\engin2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Konrad\Documents\engin2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-main-d.lib;sfml-system-d.lib;sfml-window-d.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>C:\Users\Konrad\Desktop\programowanie silników\lib;C:\Users\Konrad\SkyDrive\Dokumenty\repos\engin2d\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Konrad\Documents\engin2d\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -75,6 +75,7 @@
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Pawn.cpp" />
     <ClCompile Include="RecourceFactory.cpp" />
+    <ClCompile Include="SimpleHero.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture2D.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="Pawn.h" />
     <ClInclude Include="ResourceFactory.h" />
     <ClInclude Include="ShadersLoader.h" />
+    <ClInclude Include="SimpleHero.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture2D.h" />

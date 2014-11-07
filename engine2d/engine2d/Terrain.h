@@ -3,6 +3,7 @@
 
 #include "Headers.h"
 #include "Sprite.h"
+#include "SimpleHero.h"
 
 class Terrain
 {
@@ -18,12 +19,14 @@ private:
 
 
 public:
-	Terrain(string file);
+	Terrain(string file, mx_vector2, mx_vector2);
 	void SetViewSize(mx_vector2, mx_vector2);
 	void SetViewPos(mx_vector2);
 	void MoveByVector(mx_vector2);
 
 	mx_vector2 GetStartPoint();
+	mx_vector2 GetGridInWorldPosition(mx_vector2 grid);
+	mx_vector2 GetCurrentPosition();
 
 	void update();
 	~Terrain();

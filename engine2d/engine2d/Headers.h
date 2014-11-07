@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <fstream>
 
@@ -15,5 +16,7 @@
 
 using namespace std;
 using namespace sf;
+
+extern Window window;
 
 #endif 

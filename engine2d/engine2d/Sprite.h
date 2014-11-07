@@ -16,7 +16,8 @@ private:
 	{
 		IGNOR,
 		ANIMATE,
-		ANIMATELESS
+		ANIMATELESS,
+		SMOOTH
 	} _state;
 	float _framesPerSecond;
 	Texture2D* _texture;
@@ -32,9 +33,11 @@ public:
 	MySprite(Texture2D*, int = 1, float = 0.0f);
 	void update();
 	void draw(mx_vector2, float);
+	void draw(mx_vector2, float, float);
 	void play();
 	void resume();
 	void pause();
+	void smoothSwitch();
 };
 
 #endif

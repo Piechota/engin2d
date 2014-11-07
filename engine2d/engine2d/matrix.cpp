@@ -640,6 +640,11 @@ mx_matrix4 mx_matrix4::operator *= (const float x)
 	 return tmp;
  }
 
+ mx_vector2 operator * (const mx_vector2 V, const float a)
+ {
+	 mx_vector2 tmp(a*V[0], a*V[1]);
+	 return tmp;
+ }
  mx_vector2 operator + (const mx_vector2 V1, const mx_vector2 V2)
  {
 	 mx_vector2 tmp(V1[0] + V2[0], V1[1] + V2[1]);

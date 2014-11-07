@@ -20,8 +20,10 @@ Terrain::~Terrain()
 	delete[] _tiles;
 }
 
-Terrain::Terrain(string file)
+Terrain::Terrain(string file, mx_vector2 winSize, mx_vector2 size)
 {
+	SetViewSize(winSize, size);
+
 	ifstream mapFile;
 	mapFile.open(ResourceFactory::resource + file);
 
@@ -57,11 +59,26 @@ Terrain::Terrain(string file)
 		{
 			SetViewPos(mx_vector2(x, y));
 			_startGrid = mx_vector2(x, y);
+
+
+			new SimpleHero(
+				new MySprite(ResourceFactory::GetInstance().load("hero.png"), 3, 5.f),
+				_startGrid, 2.f);
+		}
+
+		if (mapTile == 'w')
+		{
+			_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(string() + mapTile + ".png"), 2, 1.f);
+			_tiles[x][y]->play();
+			_tiles[x][y]->smoothSwitch();
+			continue;
 		}
 		_tiles[x][y] = new MySprite(ResourceFactory::GetInstance().load(string() + mapTile + ".png"));
 	}
 
 	mapFile.close();
+
+	_currentPosition += mx_vector2(rightG / 2.f, topG / 2.f);
 }
 
 void Terrain::SetViewSize(mx_vector2 winSize, mx_vector2 size)
@@ -85,7 +102,7 @@ void Terrain::SetViewSize(mx_vector2 winSize, mx_vector2 size)
 
 void Terrain::SetViewPos(mx_vector2 position)
 {
-	_currentPosition = position;
+	_currentPosition = mx_vector2(rightG / 2.f, topG / 2.f) - position;
 }
 
 void Terrain::update()
@@ -95,9 +112,18 @@ void Terrain::update()
 		for (int y = 0; y < _height; y++)
 		{
 			_tiles[x][y]->update();
-			_tiles[x][y]->draw(mx_vector2(x, y) - _currentPosition + mx_vector2(rightG / 2.f, topG / 2.f), 0);
+			_tiles[x][y]->draw(mx_vector2(x, y) + _currentPosition, 0);
 		}
 	}
+
+	for_each(ResourceFactory::GetInstance().pawns.begin(), ResourceFactory::GetInstance().pawns.end(), [&](Pawn* pw) 
+	{
+		pw->Update(GetCurrentPosition()); 
+		if (typeid(*pw) == typeid(SimpleHero))
+		{
+			SetViewPos(((SimpleHero*)pw)->GetPosition());
+		}
+	});
 }
 
 void Terrain::MoveByVector(mx_vector2 delta)
@@ -108,4 +134,14 @@ void Terrain::MoveByVector(mx_vector2 delta)
 mx_vector2 Terrain::GetStartPoint()
 {
 	return _startGrid;
+}
+
+mx_vector2 Terrain::GetGridInWorldPosition(mx_vector2 grid)
+{
+	return grid + mx_vector2(rightG / 2.f, topG / 2.f);
+}
+
+mx_vector2 Terrain::GetCurrentPosition()
+{
+	return _currentPosition;
 }

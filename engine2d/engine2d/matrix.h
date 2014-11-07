@@ -121,6 +121,7 @@ mx_vector3 operator * (const mx_vector3 V1, const mx_vector3 V2);
 mx_vector3 operator / (const mx_vector3 V, const float a);
 mx_vector3 operator - (const mx_vector3 V1, const mx_vector3 V2);
 
+mx_vector2 operator * (const mx_vector2 V, const float a);
 mx_vector2 operator + (const mx_vector2 V1, const mx_vector2 V2);
 mx_vector2 operator - (const mx_vector2 V1, const mx_vector2 V2);
 

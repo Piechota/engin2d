@@ -83,8 +83,14 @@ void MySprite::update()
 	}
 	_currentFrame += Timer::getDeltaTime() * _framesPerSecond;
 
-	int changeToFrame = (int)_currentFrame;
-	if (changeToFrame >= _frameCount)
+	float changeToFrame;
+
+	if (_state != SMOOTH)
+		changeToFrame = (int)_currentFrame;
+	else
+		changeToFrame = _currentFrame;
+
+	if (changeToFrame >= _frameCount )
 	{
 		changeToFrame = 0;
 		_currentFrame = 0;
@@ -127,6 +133,35 @@ void MySprite::draw(mx_vector2 position, float deegre)
 	glDisableVertexAttribArray(1);
 }
 
+void MySprite::draw(mx_vector2 position, float deegre, float axis)
+{
+	mx_matrix4 mvMatrix;
+	mvMatrix.LoadIdentity();
+	mvMatrix.translate(position[0], position[1], 0.f);
+	mvMatrix.rotate(0.f, 0.f, axis, deegre);
+
+	mvMatrix = pMatrix * mvMatrix;
+	glUseProgram(program);
+
+	_texture->bind();
+	glUniform1i(glGetUniformLocation(program, "tex"), 0);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "mvpMatrix"), 1, GL_TRUE, mvMatrix.data);
+
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+}
+
 void MySprite::play()
 {
 	_state = ANIMATE;
@@ -141,4 +176,9 @@ void MySprite::resume()
 void MySprite::pause()
 {
 	_state = ANIMATELESS;
+}
+
+void MySprite::smoothSwitch()
+{
+	_state = SMOOTH;
 }
